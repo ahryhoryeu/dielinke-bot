@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: dielinke-bot
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
