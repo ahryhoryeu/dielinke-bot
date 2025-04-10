@@ -16,10 +16,15 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o bot
 
 # Final stage
-FROM scratch
+FROM alpine:3.21
+
+# Install CA certificates
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /app
 
 # Copy the binary from builder
-COPY --from=builder /app/bot /bot
+COPY --from=builder /app/bot .
 
 # Run the bot
-CMD ["/bot"]
+CMD ["./bot"]
