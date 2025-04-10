@@ -2,12 +2,31 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func main() {
+	// Start HTTP server
+	go func() {
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("Die Linke Bot - Because even socialists need to fix their links! 🚀\n\nThis bot transforms your social media links into more accessible versions. No capitalist algorithms here!"))
+		})
+
+		http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("OK"))
+		})
+
+		log.Println("Starting HTTP server on :8080")
+		if err := http.ListenAndServe(":8080", nil); err != nil {
+			log.Fatal("HTTP server failed:", err)
+		}
+	}()
+
+	// Telegram bot setup
 	botToken := os.Getenv("TELEGRAM_BOT_TOKEN")
 	if botToken == "" {
 		log.Fatal("TELEGRAM_BOT_TOKEN environment variable is not set")
