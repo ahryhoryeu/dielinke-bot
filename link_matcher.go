@@ -25,7 +25,7 @@ func FindAndTransformLinks(text string) []LinkMatch {
 	if instagramRegex.MatchString(text) {
 		matches = append(matches, LinkMatch{
 			OriginalURL: text,
-			TransformedURL: strings.Replace(text, "instagram.com", "kkinstagram.com", 1),
+			TransformedURL: strings.Replace(text, "instagram.com", "kksave.com", 1),
 			Type: "instagram",
 		})
 	}

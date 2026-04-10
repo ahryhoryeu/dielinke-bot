@@ -64,7 +64,7 @@ func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		var replyText string
 		switch match.Type {
 		case "instagram":
-			replyText = "Instagram reel detected. Here's the kkinstagram version:\n" + match.TransformedURL
+			replyText = "Instagram reel detected. Here's the kksave version:\n" + match.TransformedURL
 		case "twitter":
 			replyText = "Twitter post detected. Here's the fxembed version:\n" + match.TransformedURL
 		case "x":

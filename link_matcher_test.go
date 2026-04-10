@@ -16,7 +16,7 @@ func TestFindAndTransformLinks(t *testing.T) {
 			expected: []LinkMatch{
 				{
 					OriginalURL:    "Check this out: instagram.com/reel/abc123",
-					TransformedURL: "Check this out: kkinstagram.com/reel/abc123",
+					TransformedURL: "Check this out: kksave.com/reel/abc123",
 					Type:          "instagram",
 				},
 			},
@@ -60,7 +60,7 @@ func TestFindAndTransformLinks(t *testing.T) {
 			expected: []LinkMatch{
 				{
 					OriginalURL:    "instagram.com/reel/abc and twitter.com/user/123",
-					TransformedURL: "kkinstagram.com/reel/abc and twitter.com/user/123",
+					TransformedURL: "kksave.com/reel/abc and twitter.com/user/123",
 					Type:          "instagram",
 				},
 				{
