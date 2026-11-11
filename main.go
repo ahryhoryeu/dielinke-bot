@@ -4,9 +4,32 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
+
+type config struct {
+	InstagramReelsMode string
+	YTDLPPath          string
+}
+
+func loadConfig() config {
+	cfg := config{
+		InstagramReelsMode: strings.ToLower(os.Getenv("INSTAGRAM_REELS_MODE")),
+		YTDLPPath:          os.Getenv("YTDLP_PATH"),
+	}
+
+	if cfg.InstagramReelsMode == "" {
+		cfg.InstagramReelsMode = "link"
+	}
+	if cfg.YTDLPPath == "" {
+		cfg.YTDLPPath = "yt-dlp"
+	}
+
+	return cfg
+}
 
 func main() {
 	// Start HTTP server
@@ -31,18 +54,21 @@ func main() {
 	if botToken == "" {
 		log.Fatal("TELEGRAM_BOT_TOKEN environment variable is not set")
 	}
+	cfg := loadConfig()
 
-	bot, err := tgbotapi.NewBotAPI(botToken)
+	bot, err := tgbotapi.NewBotAPIWithClient(botToken, tgbotapi.APIEndpoint, &http.Client{Timeout: 2 * time.Minute})
 	if err != nil {
 		log.Panic(err)
 	}
 
-	bot.Debug = true
+	bot.Debug = false
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
+	worker := newMediaWorker(bot, newMediaProcessor(cfg))
+	defer worker.close()
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
@@ -52,29 +78,7 @@ func main() {
 
 		// Check if the message contains a URL
 		if update.Message.Text != "" {
-			handleMessage(bot, update.Message)
+			handleMessage(bot, update.Message, cfg, worker)
 		}
-	}
-}
-
-func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
-	matches := FindAndTransformLinks(message.Text)
-
-	for _, match := range matches {
-		var replyText string
-		switch match.Type {
-		case "instagram":
-			replyText = "Instagram reel detected. Here's the kksave version:\n" + match.TransformedURL
-		case "twitter":
-			replyText = "Twitter post detected. Here's the fxembed version:\n" + match.TransformedURL
-		case "x":
-			replyText = "X.com post detected. Here's the fxembed version:\n" + match.TransformedURL
-		case "bluesky":
-			replyText = "Bluesky post detected. Here's the fxembed version:\n" + match.TransformedURL
-		}
-
-		reply := tgbotapi.NewMessage(message.Chat.ID, replyText)
-		reply.ReplyToMessageID = message.MessageID
-		bot.Send(reply)
 	}
 }

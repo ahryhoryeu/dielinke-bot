@@ -1,0 +1,10 @@
+.git
+.agents
+.aws
+.codex
+.env
+.env.*
+*.mp4
+*.mkv
+*.webm
+bot
