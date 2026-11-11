@@ -7,4 +7,6 @@ services:
     envVars:
       - key: TELEGRAM_BOT_TOKEN
         sync: false
+      - key: INSTAGRAM_REELS_MODE
+        value: download
     port: 8080
